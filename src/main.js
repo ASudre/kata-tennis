@@ -1,12 +1,29 @@
 /** @flow */
 
-function delayedHello(name: string, delay: number = 2000): Promise<string> {
-  return new Promise((resolve) => setTimeout(() => resolve(`Hello, ${name}`), delay));
-}
+export type Result = 'PLAYER_ONE' | 'PLAYER_TWO' | 'PENDING';
+export type Winner = 'PLAYER_ONE' | 'PLAYER_TWO';
+export type DEUCE = 'PLAYER_ONE' | 'PLAYER_TWO' | 'NOONE';
+export type State = {
+  player1: number,
+  player2: number,
+  deuce: DEUCE
+};
 
-// Below is an example of using both, the eslint and flow errors suppression
+export default function calculateScore(state: State, winner: Winner): Result {
+  const { player1, player2, deuce } = state;
 
-// $FlowFixMe: add type annotations to parameters
-export default async function greeter(name) { // eslint-disable-line flowtype/require-return-type
-  return delayedHello(name);
+  if (player1 < 40 && player2 < 40) {
+    return 'PENDING';
+  }
+
+  if (player1 === player2) {
+    switch (deuce) {
+      case 'NOONE':
+        return 'PENDING';
+      default:
+        return winner === deuce ? winner : 'PENDING';
+    }
+  }
+
+  return winner;
 }

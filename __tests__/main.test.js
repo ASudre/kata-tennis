@@ -1,28 +1,85 @@
 /** @flow */
 
-import greeter from '../src/main';
+import calculateScore from '../src/main';
 
 describe('greeter function', () => {
-  // Read more: https://facebook.github.io/jest/docs/api.html#jestusefaketimers
-  jest.useFakeTimers();
+  it('should continue when no one wins yet', () => {
+    // given
+    const state = {
+      player1: 0,
+      player2: 0,
+      deuce: 'NOONE',
+    };
+    const winner = 'PLAYER_ONE';
 
-  let hello;
+    // when
+    const result = calculateScore(state, winner);
 
-  // Act before assertions
-  beforeAll(async () => {
-    const p = greeter('John');
-    jest.runOnlyPendingTimers();
-    hello = await p;
+    // then
+    expect(result).toEqual('PENDING');
   });
 
-  // Assert if setTimeout was called properly
-  it('delays the greeting by 2 seconds', () => {
-    expect(setTimeout.mock.calls.length).toBe(1);
-    expect(setTimeout.mock.calls[0][1]).toBe(2000);
+  it('should return the first player when he wins', () => {
+    // given
+    const state = {
+      player1: 40,
+      player2: 30,
+      deuce: 'NOONE',
+    };
+    const winner = 'PLAYER_ONE';
+
+    // when
+    const result = calculateScore(state, winner);
+
+    // then
+    expect(result).toEqual('PLAYER_ONE');
   });
 
-  // Assert greeter result
-  it('greets a user with `Hello, {name}` message', () => {
-    expect(hello).toBe('Hello, John');
+  it('should continue when two players are at 40', () => {
+    // given
+    const state = {
+      player1: 40,
+      player2: 40,
+      deuce: 'NOONE',
+    };
+    const winner = 'PLAYER_ONE';
+
+    // when
+    const result = calculateScore(state, winner);
+
+    // then
+    expect(result).toEqual('PENDING');
+  });
+
+  it('should return the first player when he wins the deuce', () => {
+    // given
+    const state = {
+      player1: 40,
+      player2: 40,
+      deuce: 'PLAYER_ONE',
+    };
+    const winner = 'PLAYER_ONE';
+
+    // when
+    const result = calculateScore(state, winner);
+
+    // then
+    expect(result).toEqual('PLAYER_ONE');
+  });
+
+  it('should return PENDING when the player without advantage wins', () => {
+    // given
+    const state = {
+      player1: 40,
+      player2: 40,
+      deuce: 'PLAYER_ONE',
+    };
+    const winner = 'PLAYER_TWO';
+
+    // when
+    const result = calculateScore(state, winner);
+
+    // then
+    expect(result).toEqual('PENDING');
   });
 });
